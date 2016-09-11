@@ -1,0 +1,14 @@
+{
+  "name": "karma-better-benchmark-reporter",
+  "version": "1.0.0",
+  "description": "A reporter for karma benchmark",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^1.1.3"
+  }
+}
