@@ -7,10 +7,12 @@ var BenchReporter = function(baseReporterDecorator, formatError, config) {
 	if(!config) {
 		config = {};
 	}
+  
+  // disable chalk when colors is set to false
+  chalk.enabled = config.colors !== false;
 
 	config.benchmarkReporter = config.benchmarkReporter || {};
-	 // disable chalk when colors is set to false
-  // chalk.enabled = config.colors !== false;
+
 	// set color functions
 	config.benchmarkReporter.colors = config.benchmarkReporter.colors || {};
 
@@ -93,7 +95,7 @@ var BenchReporter = function(baseReporterDecorator, formatError, config) {
   };
 };
 
-BenchReporter.$inject = ['baseReporterDecorator'];
+BenchReporter.$inject = ['baseReporterDecorator', 'formatError', 'config'];
 
 module.exports = {
   'reporter:benchmark': ['type', BenchReporter]
