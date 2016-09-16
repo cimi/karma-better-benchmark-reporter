@@ -15,6 +15,10 @@ module.exports = function(config) {
         success: 'green',
         warning: 'yellow',
         error: 'red'
+      },
+      frequency: {
+        interval: 'sec', // or min, hour
+        decimals: 0 // number of decimals when reporting the operations/interval
       }
     },
     colors: true // set to false to disable colors

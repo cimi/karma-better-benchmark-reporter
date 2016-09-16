@@ -1,23 +1,16 @@
-var chalk = require('chalk');
-var symbols = require('./symbols');
 
-var BenchReporter = function(baseReporterDecorator, formatError, config) {
-  baseReporterDecorator(this);
-
-	if(!config) {
-		config = {};
-	}
-  
+function getColors(config) {
+  var chalk = require('chalk');
+  var symbols = require('./symbols');
+    
   // disable chalk when colors is set to false
   chalk.enabled = config.colors !== false;
 
-	config.benchmarkReporter = config.benchmarkReporter || {};
+  // set color functions
+  config.benchmarkReporter.colors = config.benchmarkReporter.colors || {};
 
-	// set color functions
-	config.benchmarkReporter.colors = config.benchmarkReporter.colors || {};
-
-	// set symbol functions
-	config.benchmarkReporter.symbols = config.benchmarkReporter.symbols || {};	
+  // set symbol functions
+  config.benchmarkReporter.symbols = config.benchmarkReporter.symbols || {};  
 
   var colors = {
       success: {
@@ -38,13 +31,52 @@ var BenchReporter = function(baseReporterDecorator, formatError, config) {
       }
   };
 
+  return colors;
+}
+
+function setDefaults(config) {
+  
+  if(!config) {
+    config = {};
+  }
+  config.benchmarkReporter = config.benchmarkReporter || {};
+
+  return config;
+}
+
+function getFrequency(config) {
+  var freq = {};
+  var DEFAULT_INTERVAL = 'sec';
+  var DEFAULT_DECIMALS = 0;
+  var MAX_DECIMALS = 20;
+
+  if (config.benchmarkReporter.frequency) {
+    freq.interval = config.benchmarkReporter.frequency.interval || DEFAULT_INTERVAL;
+    freq.decimals = Number(config.benchmarkReporter.frequency.decimals) || DEFAULT_DECIMALS;
+    if(freq.decimals > MAX_DECIMALS) {
+      freq.decimals = MAX_DECIMALS; 
+    } 
+  } else {
+    freq.interval = DEFAULT_INTERVAL;
+    freq.decimals = DEFAULT_DECIMALS;
+  }
+
+  return freq;
+}
+
+var BenchReporter = function(baseReporterDecorator, formatError, config) {
+  baseReporterDecorator(this);
+
   var resultSet = {};
+  var config = setDefaults(config);
+  var colors = getColors(config);
+  var frequency = getFrequency(config);
 
   this.onRunComplete = function(browsers, resultInfo) {
     for (var browserName in resultSet) {
       var groups = resultSet[browserName];
 
-      this.write(chalk.bold('SUMMARY: \n'));
+      this.write('SUMMARY: \n');
 
       for (var groupName in groups) {
         var results = groups[groupName]
@@ -69,29 +101,28 @@ var BenchReporter = function(baseReporterDecorator, formatError, config) {
 
   this.specSuccess = function(browser, result) {
   	var prefixPadding = Array(8).join(' ');
-    
+    var opsPerInterval;
     var browser = browser.name;
     var suite = result.benchmark.suite;
     var name = result.benchmark.name;
-		var ops;
-		var frequency;
 
     // Get set and store results
     var browserSet = resultSet[browser] = resultSet[browser] || {};
     browserSet[suite] = browserSet[suite] || [];
     browserSet[suite].push(result);
-
-    var opsPerSec = Math.floor(result.benchmark.hz);
     
-    if (opsPerSec !== 0 ) {
-    	frequency = 'ops/sec';
-    	ops = opsPerSec;
-    } else {
-    	frequency = 'ops/hour';
-	    ops = Math.floor(3600 * result.benchmark.hz);
+    if(frequency.interval === 'sec') {
+      opsPerInterval = result.benchmark.hz.toFixed(frequency.decimals);
+    } else if(frequency.interval === 'min') {
+      opsPerInterval = (60 * result.benchmark.hz).toFixed(frequency.decimals);
+
+    } else if(frequency.interval === 'hour') {
+      opsPerInterval = (3600 * result.benchmark.hz).toFixed(frequency.decimals);
+
     }
+
     this.write(colors.success.print(`${browser} ${suite}: \n`))
-    this.write(`${prefixPadding} ${name} at ${ops} ${frequency} \n`);
+    this.write(`${prefixPadding} ${name} at ${opsPerInterval} opts/${frequency.interval} \n`);
   };
 };
 
