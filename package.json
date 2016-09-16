@@ -2,11 +2,18 @@
   "name": "karma-better-benchmark-reporter",
   "version": "1.0.0",
   "description": "A reporter for karma benchmark",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fuioreaa/karma-better-benchmark-reporter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fuioreaa/karma-better-benchmark-reporter/issues"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Ana Fuiorea",
   "license": "MIT",
   "dependencies": {
     "chalk": "^1.1.3"
