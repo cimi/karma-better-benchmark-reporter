@@ -122,7 +122,7 @@ var BenchReporter = function(baseReporterDecorator, formatError, config) {
     }
 
     this.write(colors.success.print(`${browser} ${suite}: \n`))
-    this.write(`${prefixPadding} ${name} at ${opsPerInterval} opts/${frequency.interval} \n`);
+    this.write(`${prefixPadding} ${name} at ${opsPerInterval} ops/${frequency.interval} \n`);
   };
 };
 
